@@ -3,7 +3,7 @@ import User from "@/lib/models/user";
 import { NextResponse } from "next/server";
 import { Types } from "mongoose";
 import Category from "@/lib/models/category";
-import { request } from "http";
+
 
 export const PATCH = async (request: Request, paramId: { params: any }) => {
   const categoryId = paramId.params.category;
