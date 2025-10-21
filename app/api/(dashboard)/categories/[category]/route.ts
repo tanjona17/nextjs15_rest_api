@@ -4,7 +4,6 @@ import { NextResponse } from "next/server";
 import { Types } from "mongoose";
 import Category from "@/lib/models/category";
 
-
 export const PATCH = async (request: Request, paramId: { params: any }) => {
   const categoryId = paramId.params.category;
 
@@ -111,7 +110,6 @@ export const DELETE = async (request: Request, paramId: { params: any }) => {
       JSON.stringify({ message: "Category deleted successfully" }),
       { status: 200 }
     );
-    
   } catch (error: any) {
     return new NextResponse(
       "Error while deleting the category" + error.message,
