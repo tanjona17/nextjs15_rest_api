@@ -10,6 +10,11 @@ export const GET = async (request: Request) => {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get("userId");
     const categoryId = searchParams.get("categoryId");
+    const keywords = searchParams.get("keywords") as string;
+    const startDate = searchParams.get("startDate");
+    const endDate = searchParams.get("endDate");
+    const page = Number(searchParams.get("page") ?? 1);
+    const limit = Number(searchParams.get("limit") ?? 3);
 
     if (!userId || !Types.ObjectId.isValid(userId)) {
       return new NextResponse(
@@ -45,8 +50,44 @@ export const GET = async (request: Request) => {
       category: new Types.ObjectId(categoryId),
     };
 
+    // check the keywords in the title or in the description
+
+    if (keywords) {
+      // $or means that the keywords should exist  in title or in description and options "i" means case sensitive
+
+      filter.$or = [
+        {
+          title: { $regex: keywords, $options: "i" },
+        },
+        {
+          description: { $regex: keywords, $options: "i" },
+        },
+      ];
+    }
+
+    // filter by date
+
+    if (startDate && endDate) {
+      filter.createdAt = {
+        $gte: new Date(startDate), // $gte: greater than or equal to
+        $lte: new Date(endDate), // $lte: less than or equal to
+      };
+    } else if (startDate) {
+      filter.createdAt = {
+        $gte: new Date(startDate),
+      };
+    } else if (endDate) {
+      filter.createdAt = {
+        $gte: new Date(endDate),
+      };
+    }
+
+    // pagination
+    const skip = (page - 1) * limit
     // TODO
-    const blogs = await Blog.find(filter);
+    
+    const blogs = await Blog.find(filter).skip(skip).limit(limit);
+
 
     return new NextResponse(JSON.stringify({ blogs }), { status: 200 });
   } catch (error: any) {

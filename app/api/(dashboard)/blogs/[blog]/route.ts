@@ -158,3 +158,4 @@ export const DELETE = async (request: Request, paramId: { params: any }) => {
     return new NextResponse("Error while updating blog", { status: 500 });
   }
 };
+
