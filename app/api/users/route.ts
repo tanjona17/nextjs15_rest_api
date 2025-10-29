@@ -2,7 +2,7 @@ import connect from "@/lib/db";
 import User from "@/lib/models/user";
 import { NextResponse } from "next/server";
 import { Types } from "mongoose";
-
+import bcrypt from "bcryptjs";
 
 const ObjectId = require("mongoose").Types.ObjectId;
 
@@ -18,19 +18,50 @@ export const GET = async () => {
   }
 };
 
+
+
 export const POST = async (request: Request) => {
   try {
     const body = await request.json();
+    const { email, username, password } = body;
+
+    // Validate input
+    if (!email || !username || !password) {
+      return new NextResponse(
+        JSON.stringify({
+          message: "Email, username, and password are required",
+        }),
+        { status: 400 }
+      );
+    }
+
     await connect();
-    const newUser = new User(body);
+
+    // Hash password before saving
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = new User({
+      email,
+      username,
+      password: hashedPassword,
+    });
+
     await newUser.save();
 
     return new NextResponse(
-      JSON.stringify({ message: "User created successfully", user: newUser }),
+      JSON.stringify({
+        message: "User created successfully",
+        user: {
+          id: newUser._id,
+          email: newUser.email,
+          username: newUser.username,
+          password: newUser.password,
+        },
+      }),
       { status: 200 }
     );
   } catch (error: any) {
-    return new NextResponse("Error while creating new user" + error.message, {
+    return new NextResponse("Error while creating new user: " + error.message, {
       status: 500,
     });
   }
@@ -116,7 +147,6 @@ export const DELETE = async (request: Request) => {
       }),
       { status: 200 }
     );
-
   } catch (error: any) {
     return new NextResponse("Error while creating new user" + error.message, {
       status: 500,
