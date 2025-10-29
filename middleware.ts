@@ -1,22 +1,16 @@
 import { NextResponse } from "next/server";
 import { authentification } from "@/app/middlewares/api/authMiddleware";
 
-// ✅ Protect all /api/* routes
-export const config = {
-  matcher: "/api/:path*",
-};
+//export const runtime = "experimental-edge";  // explicitly run on Edge
+export const config = { matcher: "/api/:path*" };
 
-export default function middleware(request: Request) {
-  // Don’t block login or register routes
-  const publicPaths = ["/api/login", "/api/register"];
+export default async function middleware(request: Request) {
+  const publicPaths = ["/api/login", "/api/register",];
   const { pathname } = new URL(request.url);
 
-  if (publicPaths.includes(pathname)) {
-    return NextResponse.next();
-  }
+  if (publicPaths.includes(pathname)) return NextResponse.next();
 
-  // ✅ Run token authentication
-  const auth = authentification(request);
+  const auth = await authentification(request);
 
   if (!auth?.isValid) {
     return new NextResponse(
@@ -25,6 +19,5 @@ export default function middleware(request: Request) {
     );
   }
 
-  // ✅ Allow request if valid
   return NextResponse.next();
 }
