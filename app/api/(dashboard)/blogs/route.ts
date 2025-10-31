@@ -83,12 +83,10 @@ export const GET = async (request: Request) => {
     }
 
     // pagination
-    const skip = (page - 1) * limit
-    // TODO
-    
+    const skip = (page - 1) * limit;
+
     const blogs = await Blog.find(filter).skip(skip).limit(limit);
-
-
+    
     return new NextResponse(JSON.stringify({ blogs }), { status: 200 });
   } catch (error: any) {
     return new NextResponse("Error wile fetching blogs" + error.message, {
