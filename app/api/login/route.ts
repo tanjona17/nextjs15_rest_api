@@ -16,7 +16,6 @@ export const POST = async (request: Request) => {
       );
     }
 
-    // Find user
     const user = await User.findOne({ email });
     if (!user) {
       return new NextResponse(
@@ -41,7 +40,7 @@ export const POST = async (request: Request) => {
       { expiresIn: "1d" }
     );
 
-    // Option 1: return as JSON
+   
     return new NextResponse(
       JSON.stringify({
         message: "Login successful",
@@ -55,8 +54,6 @@ export const POST = async (request: Request) => {
       { status: 200 }
     );
 
-    // Option 2 (better for production): 
-    // Set token as HTTP-only cookie instead of returning it in JSON.
   } catch (error: any) {
     return new NextResponse(
       JSON.stringify({ message: "Error while logging in", error: error.message }),

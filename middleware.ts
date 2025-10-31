@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { authentification } from "@/app/middlewares/api/authMiddleware";
+import { middlewareLogs } from "./app/middlewares/api/middlewareLogs";
 
 //export const runtime = "experimental-edge";  // explicitly run on Edge
 export const config = { matcher: "/api/:path*" };
@@ -10,6 +11,7 @@ export default async function middleware(request: Request) {
 
   if (publicPaths.includes(pathname)) return NextResponse.next();
 
+  
   const auth = await authentification(request);
 
   if (!auth?.isValid) {

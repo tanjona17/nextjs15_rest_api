@@ -25,7 +25,7 @@ export const POST = async (request: Request) => {
     const body = await request.json();
     const { email, username, password } = body;
 
-    // Validate input
+
     if (!email || !username || !password) {
       return new NextResponse(
         JSON.stringify({
@@ -37,7 +37,7 @@ export const POST = async (request: Request) => {
 
     await connect();
 
-    // Hash password before saving
+    // Hash password 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = new User({
